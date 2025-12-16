@@ -11,7 +11,7 @@ const getAllChats =async(req:Request,res:Response)=>{
         })
     }
     else{
-        console.log("Error: Either sessionId or userId is empty.")
+        //console.log("Error: Either sessionId or userId is empty.")
         res.status(500).json({
             "message":"Error: Either sessionId or userId is empty."
         })

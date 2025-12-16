@@ -5,7 +5,6 @@ const socketInitialize = () => {
   socket =  io('http://localhost:3001',{
     autoConnect:true
   });
-  console.log(socket, 'socket initilize')
 }
 
 export  {

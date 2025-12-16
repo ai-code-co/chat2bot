@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { MessageCircle, SlidersHorizontal, Compass, Bolt, Settings } from "lucide-react";
+import { MessageCircle, Settings } from "lucide-react";
 import logo from "/logo1.svg";
 import ChatHistory from "../ChatHistory";
 
@@ -53,7 +53,7 @@ export default function Sidebar() {
             active={activeTab === "chat"}
             click={() => toggleSidePannel('chat')}
           />
-
+{/* 
           <IconButton
             icon={<SlidersHorizontal size={18} />}
             active={activeTab === "settings-tab"}
@@ -70,7 +70,7 @@ export default function Sidebar() {
             icon={<Bolt size={18} />}
             active={activeTab === "boost"}
             click={() => toggleSidePannel('boost')}
-          />
+          /> */}
         </div>
 
         {/* Bottom Icon */}
@@ -86,9 +86,6 @@ export default function Sidebar() {
       {/* Content Area */}
       <div>
         {activeTab === "chat" && <ChatHistory />}
-        {/* {activeTab === "settings" && <div>Settings Page</div>}
-        {activeTab === "explore" && <div>Explore Content</div>}
-        {activeTab === "boost" && <div>Boost Panel</div>} */}
       </div>
 
     </div>

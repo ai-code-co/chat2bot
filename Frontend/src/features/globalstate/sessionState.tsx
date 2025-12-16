@@ -11,7 +11,6 @@ export const globalStateSlice = createSlice({
     initialState,
     reducers:{
         setSessionId:(state,action)=>{
-            console.log(action.payload, '14 sessionState')
             state.currentSessionId= action.payload;
         },
         resetGlobalState:()=>initialState

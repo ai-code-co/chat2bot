@@ -52,7 +52,6 @@ io.on("connection", (socket) => {
 
     // Get prompt 
     socket.on("send_prompt", ({ userId, sessionId, text, regenereate }) => {
-        //userPrompts[userId] = text;
         userPrompt = text
         userID = userId
         if (!sessionId) {
@@ -65,7 +64,6 @@ io.on("connection", (socket) => {
     })
 
     socket.on("update_messages", async (responseId) => {
-        console.log("update_messages received:", responseId);
         await updateResponseId({ responseId });
     });
 

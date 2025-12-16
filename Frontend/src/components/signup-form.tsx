@@ -40,6 +40,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     }
     catch(error){
       console.log("Error while creating user account",error)
+      toast("Error while creating user account")
     }
   }
   return (
@@ -84,7 +85,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                     />  
                   {/* </div> */}
                   
-                    <button onClick={()=>setShowPassword(prev => !prev)}>
+                    <button type="button" onClick={()=>setShowPassword(prev => !prev)}>
                       {showPassword ? <Eye size={20} /> :<EyeClosed size={20}/>}
                     </button>
                   

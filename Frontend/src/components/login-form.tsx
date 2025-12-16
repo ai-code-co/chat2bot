@@ -53,6 +53,7 @@ export function LoginForm({
     }
     catch (error) {
       console.log("Error in signing.", error)
+      toast("Error in signing")
     }
 
   }
@@ -98,7 +99,7 @@ export function LoginForm({
                   />
                   {/* </div> */}
 
-                  <button onClick={() => setShowPassword(prev => !prev)}>
+                  <button type="button" onClick={() => setShowPassword(prev => !prev)}>
                     {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
                   </button>
 

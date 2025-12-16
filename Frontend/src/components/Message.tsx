@@ -1,5 +1,3 @@
-import React from 'react'
-import {Search,Ellipsis} from 'lucide-react'
 import ChatBot from './ChatBot'
 const Message = () => {
     return (
@@ -11,10 +9,10 @@ const Message = () => {
                 <div className='font-semibold text-2xl'>Messages</div>
                 
                 {/* search and three buttons */}
-                <div className='flex gap-2'>
+                {/* <div className='flex gap-2'>
                     <div className='bg-[#1E1F22] rounded-md flex justify-center items-center w-[1.9rem] h-[1.9rem] '><Search size={18}/></div>
                     <div className='bg-[#1E1F22] rounded-md flex justify-center items-center w-[1.9rem] h-[1.9rem] '><Ellipsis/></div>
-                </div>
+                </div> */}
             </div>
 
               {/* Main content */}

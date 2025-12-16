@@ -63,11 +63,11 @@ const imageGeneration = async (req: Request, res: Response) => {
 
     // OLD MESSAGES
     const oldMessages = await getLastMessages({ sessionId:sessionID }) || []
-    //console.log("old messages:", oldMessages)
+   
 
     // All MESSAGES (string)
     const allMessages = await allUserMessages({userId :userID,sessionId:sessionID})
-    ///console.log("all messages:", allMessages)
+
 
   
 
@@ -116,9 +116,6 @@ const imageGeneration = async (req: Request, res: Response) => {
     ])
 
     const summaryText = summaryResult.content || ""
-    console.log("summaryText direct-->", summaryResult)
-    console.log("summaryText:", summaryText)
-
 
     //save the summary to db
     await storeSummarizeMessages({ userId: userID, summarizeText: summaryText as string })
@@ -184,8 +181,6 @@ Respond as a supportive best friend using all context naturally.
     let conversationId = ""
     if(!isRegenereate){
         conversationId = crypto.randomUUID()
-        console.log("regenerate:",isRegenereate)
-        console.log("no regneration")
         await storeMessages({ userId:userID,sessionId:sessionID, role: 'user', content: prompt,messageId:conversationId })
     }
     
@@ -215,8 +210,6 @@ Respond as a supportive best friend using all context naturally.
     );
 
     const responseId = crypto.randomUUID()
-    console.log("response Id :", responseId)
-
 
 
     let aiMessage = ""

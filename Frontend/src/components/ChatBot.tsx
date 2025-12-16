@@ -98,19 +98,11 @@ const ChatBot = () => {
         }
     }, [audioBlob])
 
-
-
-
-    //console.log("90 blog event", audioBlob)
-
-
     useEffect(() => {
         if (!socket) {
             socketInitialize()
-            console.log("socket initialized.")
         }
         socket.on("connection", () => {
-            console.log("connected:", socket)
             if (socket.id) {
                 setSocketId(socket.id)
                 socketIdRef.current = socket.id
@@ -118,10 +110,6 @@ const ChatBot = () => {
 
         })
         socket.on("socket_id", (id) => {
-            console.log(id, "id 61 socket")
-            // console.log(socket.id,"socket 62")
-            // setSocketId(id)
-            // socketIdRef.current = id
         });
 
         socket.on("send_chunks", (chunk) => {
@@ -131,7 +119,6 @@ const ChatBot = () => {
                 if (last?.role === "assistant") {
                     last.content += chunk;
 
-                    // el -->(new chunk "lo")--> hello
                     return [...prev.slice(0, -1), last]
                 }
 
@@ -214,7 +201,6 @@ const ChatBot = () => {
         });
 
         // Trigger LangChain processing
-        console.log(socket.id, "socketId 150 chatbot")
         const data = await axios.post("http://localhost:3001/chat/langchain/image", {
             socketId: socket.id
         })
@@ -223,7 +209,6 @@ const ChatBot = () => {
     };
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text)
-        //console.log("Copied:", text)
     };
 
 
@@ -307,12 +292,11 @@ const ChatBot = () => {
                                                 <div className="text-[0.7rem] bg-[#202633] rounded-md p-2 hover:bg-[#121722] cursor-pointer">
                                                     <button className="flex items-center gap-1" onClick={() => {
                                                         if (m.messageId) {
-                                                            //console.log("id:", m.messageId)
+                                                          
                                                             handleGenereateResponse(m.messageId)
 
                                                         }
                                                         else {
-                                                            //console.log("here", m.messageId)
                                                         }
                                                     }}><RefreshCcw size={12} />Generate Response
                                                     </button>

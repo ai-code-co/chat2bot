@@ -27,7 +27,7 @@ const ChatHistory = () => {
                 <div className='flex gap-2'>
                     <button className='bg-[#15c37a] text-white rounded-md flex items-center justify-center w-[1.8rem] h-[1.8rem]'
                     onClick={()=>handleClick()}><Plus size={18}/></button>
-                    <button className='bg-[#1E1F22] text-white rounded-md flex items-center justify-center w-[1.8rem] h-[1.8rem]'><Ellipsis /></button>
+                    {/* <button className='bg-[#1E1F22] text-white rounded-md flex items-center justify-center w-[1.8rem] h-[1.8rem]'><Ellipsis /></button> */}
                 </div>
             </div>
 

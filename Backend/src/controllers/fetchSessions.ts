@@ -13,7 +13,7 @@ export const getAllSessions=async(req:Request,res:Response)=>{
         })
     }
     else{
-         console.log("Error: userId is empty.")
+        // console.log("Error: userId is empty.")
         res.status(500).json({
             "message":"Error: userId is empty."
         })
