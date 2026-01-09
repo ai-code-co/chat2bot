@@ -17,7 +17,7 @@ const ChatHistory = () => {
         dispatch(resetChats())
     }
     return (
-        <div className='w-full h-full p-2 relative flex flex-col gap-4'>
+        <div className='bg-[#1f2124] sm:w-full h-full p-2 absolute z-50 sm:relative sm:z-auto  flex flex-col gap-4'>
             {/* Top bar */}
             <div className='flex justify-between'>
 

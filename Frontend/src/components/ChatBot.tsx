@@ -259,7 +259,7 @@ const ChatBot = () => {
     };
 
     return (
-        <div className={`flex flex-col items-center ${(allMessages.length > 0 && allMessages[0].role.length > 0) ? '' : 'justify-center'} mx-auto w-[70rem] h-full bg-[#3F424A] text-white px-30 `}>
+        <div className={`flex flex-col items-center ${(allMessages.length > 0 && allMessages[0].role.length > 0) ? '' : 'justify-center'} mx-auto w-full h-full bg-[#3F424A] text-white px-2 sm:px-6 md:px-10 `}>
             {/* chats */}
             {(allMessages.length > 0 && allMessages[0].role.length > 0) ? <div
                 className="w-full mt-2 flex-1  py-5 chatmessages overflow-y-auto chat-messages "
@@ -314,12 +314,12 @@ const ChatBot = () => {
                                                         else {
                                                             //console.log("here", m.messageId)
                                                         }
-                                                    }}><RefreshCcw size={12} />Generate Response
+                                                    }}><RefreshCcw size={12} /><span className="hidden sm:inline-block">Generate Response</span>
                                                     </button>
                                                 </div>
                                                 <div className="text-[0.7rem] bg-[#202633] rounded-md p-2 hover:bg-[#121722] cursor-pointer">
                                                     <button className="flex items-center gap-1 " onClick={() => handleCopy(m.content)}>
-                                                        <Copy size={12} />Copy
+                                                        <Copy size={12} /><span className="hidden sm:inline-block">Copy</span>
                                                     </button>
                                                 </div>
                                             </div> : <div></div>
@@ -330,10 +330,10 @@ const ChatBot = () => {
                     </div>
                 ))}
             </div>
-                : <div className="text-4xl mb-4">What's on your mind today?</div>}
+                : <div className="text-xl sm:text-2xl md:text-3xl lg:text-5xl mb-4">What's on your mind today?</div>}
 
             <div className="w-full py-3 ">
-                <div className="flex items-center gap-3 bg-[#2b2c30] px-4 py-3 rounded-xl border border-[#3a3b3f]">
+                <div className="flex items-center  sm:gap-3 bg-[#2b2c30] px-1 sm:px-4 py-3 rounded-xl border border-[#3a3b3f]">
 
                     {/* Text input */}
                     <textarea
