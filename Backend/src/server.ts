@@ -8,24 +8,33 @@ import cors from "cors";
 import router from "./routes/langChain.js";
 import allChatRouter from './routes/chatSliceRoute.js'
 import allSessionsRouter from './routes/sessionSliceRoutes.js'
-import createUsersTable, { createMemoryTable, createMessagesTable, createSessionTable, updateResponseId } from "./db/model.js";
+import createUsersTable, { createMemoryTable, createMessagesTable, createSessionTable, migrateMemoryTableAddExtractedFacts, updateResponseId, migrateSessionTableAddIsSaved } from "./db/model.js";
 import crypto from "crypto";
 import audioTOText from "./utils/audioToText.js";
+import audioToTextV2 from "./utils/audioToTextV2.js";
 
+// FRONTEND URL 
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
+const corsOptions = {
+    origin: [FRONTEND_URL, "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true,
+};
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
+
+//PORT 
+const PORT = process.env.PORT || 3001
 
 // HTTP server
 const server = http.createServer(app);
 
 // SOCKET INSTANCE
 export const io = new SocketIOServer(server, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-    },
+    cors: corsOptions,
 })
 
 // PROMPTS BY SOCKET ID
@@ -42,6 +51,8 @@ async function initDB() {
     await createSessionTable()
     await createMessagesTable()
     await createMemoryTable()
+    await migrateMemoryTableAddExtractedFacts()
+    await migrateSessionTableAddIsSaved()
 }
 initDB()
 
@@ -52,7 +63,6 @@ io.on("connection", (socket) => {
 
     // Get prompt 
     socket.on("send_prompt", ({ userId, sessionId, text, regenereate }) => {
-        //userPrompts[userId] = text;
         userPrompt = text
         userID = userId
         if (!sessionId) {
@@ -65,15 +75,31 @@ io.on("connection", (socket) => {
     })
 
     socket.on("update_messages", async (responseId) => {
-        console.log("update_messages received:", responseId);
         await updateResponseId({ responseId });
     });
 
     socket.on("send_audioFile", async (audioData) => {
-        const text = await audioTOText(audioData)
-        console.log("Transcribed text:", text)
-        socket.emit("audio_transcribed", text)
-    });
+        try {
+            const text = await audioToTextV2(audioData);
+
+            socket.emit(
+                "audio_transcribed",
+                text
+            )
+        }
+        catch (error) {
+
+            console.error(
+                "Audio transcription failed:",
+                error
+            )
+
+            socket.emit(
+                "audio_transcribed",
+                ""
+            )
+        }
+    })
 
     socket.on("disconnect", () => {
         console.log("disconnected")
@@ -85,6 +111,6 @@ app.use("/chat", router);
 app.use("/chat", allChatRouter)
 app.use("/chat", allSessionsRouter)
 
-server.listen(3001, () => {
+server.listen(PORT, () => {
     console.log("Server running at http://localhost:3001");
 });

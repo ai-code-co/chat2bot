@@ -3,9 +3,63 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
+/* Chat Messages scrollbar */
 .chat-messages::-webkit-scrollbar {
-  display: none;
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #323131;
+
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #6a6767;
+  border-radius: 8px;
+  /* border: 2px solid #0f0f0f; */
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #15c37a;
+}
+
+/* Chat history scrollbar */
+.chat-history-messages::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-history-messages::-webkit-scrollbar-track {
+  background: #323131;
+  border-radius: 20px;
+}
+
+.chat-history-messages::-webkit-scrollbar-thumb {
+  background: #6a6767;
+  border-radius: 20px;
+  /* border: 2px solid #0f0f0f; */
+}
+
+.chat-history-messages::-webkit-scrollbar-thumb:hover {
+  background: #15c37a;
+}
+
+/* input Textarea scrollbar */
+.textarea-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.textarea-scroll::-webkit-scrollbar-track {
+  background: #1f2124;
+  border-radius: 10px;
+}
+
+.textarea-scroll::-webkit-scrollbar-thumb {
+  background: #575b65;
+  border-radius: 10px;
+}
+
+.textarea-scroll::-webkit-scrollbar-thumb:hover {
+  background: #15c37a;
 }
 
 @theme inline {
@@ -119,6 +173,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

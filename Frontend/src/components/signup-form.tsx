@@ -17,7 +17,7 @@ import { auth } from "@/utils/FirebaseInit"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Eye, EyeClosed } from "lucide-react"
 import { useState } from "react"
-import { Link, Navigate, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
@@ -40,6 +40,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     }
     catch(error){
       console.log("Error while creating user account",error)
+      toast("Error while creating user account")
     }
   }
   return (
@@ -84,7 +85,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                     />  
                   {/* </div> */}
                   
-                    <button onClick={()=>setShowPassword(prev => !prev)}>
+                    <button type="button" onClick={()=>setShowPassword(prev => !prev)}>
                       {showPassword ? <Eye size={20} /> :<EyeClosed size={20}/>}
                     </button>
                   

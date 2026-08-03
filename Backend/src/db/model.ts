@@ -74,6 +74,15 @@ export async function createMemoryTable() {
   console.log('Memory table ensured.');
 }
 
+export async function migrateMemoryTableAddExtractedFacts() {
+  await pool.query(`
+    ALTER TABLE memory
+    ADD COLUMN IF NOT EXISTS extracted_facts TEXT DEFAULT '';
+  `);
+
+  console.log("Memory table migrated.");
+}
+
 //---FUNCTIONS
 
 //
@@ -111,10 +120,15 @@ export async function updateResponseId({ responseId }: { responseId: string }) {
 export async function getLastMessages({ sessionId }: { sessionId: string }) {
   try {
     const query = `
-      SELECT * FROM messages
-      WHERE session_ref = $1
-      ORDER BY created_at DESC
-      LIMIT 10
+      SELECT id, role, content
+      FROM (
+        SELECT id, role, content
+        FROM messages
+        WHERE session_ref = $1
+        ORDER BY id DESC
+        LIMIT 10
+      ) AS recent_messages
+      ORDER BY id ASC;
     `;
 
     const result = await pool.query(query, [sessionId])
@@ -171,7 +185,7 @@ export async function allUserMessages2({ sessionId }: { sessionId: string }) {
   }
 }
 
-export async function allUserSessions({ userId,userInput }: { userId: string,userInput:string }) {
+export async function allUserSessions({ userId, userInput }: { userId: string, userInput: string }) {
   try {
     const query = `
         SELECT 
@@ -179,6 +193,7 @@ export async function allUserSessions({ userId,userInput }: { userId: string,use
           s.user_id,
           s.title,
           s.created_at,
+          s.is_saved,
           m.content AS last_message 
           FROM sessions s
         LEFT JOIN LATERAL (
@@ -193,10 +208,17 @@ export async function allUserSessions({ userId,userInput }: { userId: string,use
        ORDER BY s.created_at DESC;
     `
     const searchTerm = `%${userInput}%`
-    const result = await pool.query(query, [userId,searchTerm])
+    const result = await pool.query(query, [userId, searchTerm])
     let messages = []
     for (let rows of result.rows) {
-      messages.push({ sessionId: rows.session_id, userId: rows.user_id, title: rows.title, createdAt: rows.created_at,lastMessage: rows.last_message })
+      messages.push({
+        sessionId: rows.session_id,
+        userId: rows.user_id,
+        title: rows.title,
+        createdAt: rows.created_at,
+        lastMessage: rows.last_message,
+        isSaved: rows.is_saved
+      })
     }
     return messages;
   }
@@ -274,18 +296,188 @@ export async function storeSessionId({ sessionId, userId, title }: { sessionId: 
 }
 
 // store user
-export async function storeUser({userId}:{userId:string}) {
-  try{
-    const storeQuery=`
+export async function storeUser({ userId }: { userId: string }) {
+  try {
+    const storeQuery = `
     INSERT INTO users(user_id)
     VALUES ($1)
     ON CONFLICT (user_id ) DO NOTHING
     RETURNING *;
     `
     const values = [userId]
-    const result = await pool.query(storeQuery,values) 
+    const result = await pool.query(storeQuery, values)
   }
-  catch(error){
-    console.log("Error during storing the user",error)
+  catch (error) {
+    console.log("Error during storing the user", error)
+  }
+}
+
+// get Message Count
+export const getMessageCount = async ({
+  userId,
+  sessionId
+}: {
+  userId: string,
+  sessionId: string
+}) => {
+  const result = await pool.query(
+    `
+        SELECT COUNT(*) 
+        FROM messages
+        WHERE user_id=$1 AND session_ref=$2
+        `,
+    [userId, sessionId]
+  )
+
+  return Number(result.rows[0].count);
+}
+
+// get summarize messages 
+export const getSummarizeMessages = async ({
+  userId
+}: {
+  userId: string
+}) => {
+
+  const result = await pool.query(
+    `
+        SELECT summarize_text
+        FROM memory
+        WHERE user_id = $1
+        ORDER BY updated_at DESC
+        LIMIT 1
+        `,
+    [userId]
+  );
+
+  if (result.rows.length === 0) {
+    return ""
+  }
+
+  return result.rows[0].summarize_text
+}
+
+export const getSession = async (
+  sessionId: string
+) => {
+
+  const result = await pool.query(
+    `
+        SELECT *
+        FROM sessions
+        WHERE session_id = $1
+        LIMIT 1
+        `,
+    [sessionId]
+  );
+
+
+  if (result.rows.length === 0) {
+    return null
+  }
+
+
+  return result.rows[0]
+}
+
+// to get extracted Facts 
+export async function getExtractedFacts(userId: string) {
+  const result = await pool.query(
+    `
+    SELECT extracted_facts
+    FROM memory
+    WHERE user_id = $1;
+    `,
+    [userId]
+  );
+
+  if (result.rows.length === 0) {
+    return null;
+  }
+
+  return result.rows[0].extracted_facts;
+}
+
+// to store facts
+export async function storeExtractedFacts({
+  userId,
+  extractedFacts,
+}: {
+  userId: string;
+  extractedFacts: string;
+}) {
+  await pool.query(
+    `
+    UPDATE memory
+    SET extracted_facts = $1,
+        updated_at = NOW()
+    WHERE user_id = $2;
+    `,
+    [extractedFacts, userId]
+  );
+
+  console.log("Extracted facts updated.")
+}
+
+// Delete session and its messages
+export async function deleteSession(sessionId: string) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN')
+    // Delete messages first to satisfy foreign key constraint
+    await client.query('DELETE FROM messages WHERE session_ref = $1', [sessionId])
+    // Delete session
+    const res = await client.query('DELETE FROM sessions WHERE session_id = $1 RETURNING *', [sessionId])
+    await client.query('COMMIT');
+    return res.rows[0];
+  } catch (error) {
+    await client.query('ROLLBACK')
+    console.error('Error during deleting session:', error)
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+// Update session title
+export async function updateSessionTitle({ sessionId, title }: { sessionId: string; title: string }) {
+  try {
+    const query = `
+      UPDATE sessions
+      SET title = $1
+      WHERE session_id = $2
+      RETURNING *;
+    `;
+    const result = await pool.query(query, [title, sessionId])
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error during updating session title:', error)
+    throw error;
+  }
+}
+
+// Migrate session table to add is_saved
+export async function migrateSessionTableAddIsSaved() {
+  await pool.query(`
+    ALTER TABLE sessions
+    ADD COLUMN IF NOT EXISTS is_saved BOOLEAN DEFAULT FALSE;
+  `)
+  console.log("Session table migrated with is_saved column.")
+}
+
+// Toggle session is_saved status
+export async function toggleSaveSession(sessionId: string) {
+  try {
+    const query = `
+      UPDATE sessions
+      SET is_saved = NOT COALESCE(is_saved, FALSE)
+      WHERE session_id = $1
+      RETURNING *;
+    `;
+    const result = await pool.query(query, [sessionId])
+    return result.rows[0]
+  } catch (error) {
+    console.error('Error during toggling session save:', error)
+    throw error
   }
 }

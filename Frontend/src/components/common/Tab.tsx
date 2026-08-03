@@ -1,7 +1,5 @@
-import React from 'react'
 import {
     Tabs,
-    TabsContent,
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
@@ -10,12 +8,13 @@ import { Bookmark, MessageCircle } from 'lucide-react'
 export interface tabProps {
     props: string[],
     design?: string,
-    defaultTab: string
+    activeTab: string,
+    onTabChange: (tab: string) => void
 }
-const Tab = ({ props, design, defaultTab }: tabProps) => {
+const Tab = ({ props, design, activeTab, onTabChange }: tabProps) => {
     return (
         <div>
-            <Tabs defaultValue={defaultTab}>
+            <Tabs value={activeTab} onValueChange={onTabChange}>
                 <TabsList className={design} >
                     {props.map((v) => {
                         return <TabsTrigger value={v} key={v} className='
@@ -25,13 +24,13 @@ const Tab = ({ props, design, defaultTab }: tabProps) => {
                                     uppercase
                                     text-[0.8rem]
                                     '>  {v == "Chats" ?
-                                <div className='flex gap-2'>
+                                <div className='flex gap-2 text-[0.7rem] sm:text-sm  items-center justify-center'>
                                     <MessageCircle />
                                     CHATS
-                                    
+
                                 </div>
                                 :
-                                <div className='flex gap-2'>
+                                <div className='flex gap-2 text-[0.7rem] sm:text-sm  items-center justify-center'>
                                     <Bookmark />
                                     SAVED
                                 </div>

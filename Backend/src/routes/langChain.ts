@@ -1,10 +1,10 @@
 import express from "express";
 
-import imageGeneration from "../controllers/imageGeneration.js";
+import chatController from "../controllers/chatController.js";
 
 const router = express.Router();
 
 
-router.post("/langchain/image",imageGeneration)
+router.post("/respond", chatController)
 
 export default router;

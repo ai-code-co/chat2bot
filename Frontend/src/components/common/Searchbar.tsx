@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Search, ListFilter } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 
 type SearchProps= {
   onSearch:(value:string)=>void
-  //setSearchText:React.Dispatch<React.SetStateAction<>>
 }
 const SearchWithFilter = ({onSearch}:SearchProps) => {
   const [inputValue, setInputValue] = useState("")
@@ -11,7 +10,6 @@ const SearchWithFilter = ({onSearch}:SearchProps) => {
   useEffect(()=>{
     const timeID = setTimeout(()=>{
       onSearch(inputValue)
-      console.log("11 searchBar.tsx Searching for:", inputValue)
     },500)
     return ()=> clearTimeout(timeID)
   },[inputValue])
@@ -35,9 +33,9 @@ const SearchWithFilter = ({onSearch}:SearchProps) => {
       </div>
 
       {/* Filter Button */}
-      <button className="p-2 rounded-md bg-[#1E1F22] hover:bg-gray-200 transition">
+      {/* <button className="p-2 rounded-md bg-[#1E1F22] hover:bg-gray-200 transition">
         <ListFilter className="w-5 h-5 text-[#10A37F]" />
-      </button>
+      </button> */}
     </div>
   );
 };
